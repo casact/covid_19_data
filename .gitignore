@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# This should include scripts to gather data, not the data itself
+*.csv
+*.pdf
+*.json
+*.txt
+*.xl*
