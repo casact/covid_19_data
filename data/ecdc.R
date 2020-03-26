@@ -7,6 +7,7 @@
 
 library(tidyverse)
 library(httr)
+library(readxl)
 
 url <- paste0(
   "https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide-"
