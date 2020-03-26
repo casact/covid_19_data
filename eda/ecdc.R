@@ -27,5 +27,5 @@ tbl_top_countries <- tbl_ecdc %>%
 tbl_threshold %>% 
   inner_join(tbl_top_countries) %>% 
   ggplot(aes(days_since, cumulative_reported, color = country)) + 
-  geom_line() + 
+  geom_line(size = 2) + 
   theme_minimal()
