@@ -22,16 +22,16 @@ GET(
 
 tbl_ecdc <- read_excel(tf) %>% 
   rename(
-    population = Pop_Data.2018
-    , country = `Countries and territories`) %>% 
-  select(-Day, -Month, -Year)
+    population = popData2018
+    , country = `countriesAndTerritories`) %>% 
+  select(-day, -month, -year)
 
 tbl_ecdc <- tbl_ecdc %>% 
   group_by(country) %>% 
-  arrange(DateRep, .by_group = TRUE) %>% 
+  arrange(dateRep, .by_group = TRUE) %>% 
   mutate(
-    cumulative_reported = cumsum(Cases)
-    , cumulative_deaths = cumsum(Deaths)
+    cumulative_reported = cumsum(cases)
+    , cumulative_deaths = cumsum(deaths)
   ) %>% 
   ungroup()
 
