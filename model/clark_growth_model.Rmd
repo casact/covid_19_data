@@ -1,0 +1,84 @@
+---
+title: Clark Growth Model
+---
+
+```{r include = FALSE}
+library(ChainLadder)
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  echo = TRUE
+  , message = FALSE
+  , warning = FALSE
+  , error = TRUE
+)
+```
+
+```{r}
+load(file.path('data', 'ecdc.rda'))
+```
+
+## Using the `ChainLadder` package
+
+The first problem we face comes in how to structure the data. Measuring from a fixed point in time means that countries will have varying degrees of latency in case reporting. However, this is somewhat artificial as there simply wasn't exposure until human contact with someone infected could take place. As with other researchers, we will rebase the time scale to the day at which the cumulative number of cases reached 100. This has already been done in our data harvesting script.
+
+Using `days_since` to represent the development lag, we can back into a kind of accident year structure by referring to the date of origin as the date at which reported cases passed 100. We will also shift this to a base year of zero. This is not numerically necessary, but makes some of the ChainLadder output a bit nicer to read, as the package will show dates as numeric.
+
+```{r}
+tbl_ecdc_triangle <- tbl_ecdc_threshold %>% 
+  group_by(country) %>% 
+  mutate(
+    origin = min(date_rep)
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    origin = difftime(origin, min(origin), units = "days") %>% as.numeric()
+  )
+```
+
+This data frame can be cast to a triangle object. 
+
+```{r}
+tri_ecdc <- tbl_ecdc_triangle %>% 
+  as.triangle(
+    origin = "origin"
+    , dev = "days_since"
+    , value = "cumulative_reported"
+)
+```
+
+Simple plots show a fair bit of variability in the development.
+
+```{r }
+plot(tri_ecdc)
+
+plot(tri_ecdc, lattice = TRUE)
+```
+
+A Clark growth curve can be fit and we can form estimates, but the most recent data points will confound our estimate of variance.
+
+```{r}
+fit_clark <- ClarkLDF(tri_ecdc)
+
+fit_clark
+```
+
+Dropping these most recent points gives us data that is numerically tractable ...
+
+```{r}
+tri_ecdc_2 <- tbl_ecdc_triangle %>% 
+  filter(origin < 71) %>% 
+  as.triangle(
+    origin = "origin"
+    , dev = "days_since"
+    , value = "cumulative_reported"
+  )
+
+fit_clark_2 <- ClarkLDF(tri_ecdc_2)
+```
+
+... but which defies reality. The standard error for some individual "accident years" is larger than the human population of the Earth.
+
+## Direct fit of the likelihood
+
+We'll try that again using a fit for each country individually.
