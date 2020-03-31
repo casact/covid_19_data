@@ -23,19 +23,32 @@ GET(
 tbl_ecdc <- read_excel(tf) %>% 
   rename(
     population = popData2018
-    , country = `countriesAndTerritories`) %>% 
+    , country = `countriesAndTerritories`
+    , date_rep = dateRep
+    , country_code = countryterritoryCode
+  ) %>% 
   select(-day, -month, -year)
 
 tbl_ecdc <- tbl_ecdc %>% 
   group_by(country) %>% 
-  arrange(dateRep, .by_group = TRUE) %>% 
+  arrange(date_rep, .by_group = TRUE) %>% 
   mutate(
     cumulative_reported = cumsum(cases)
     , cumulative_deaths = cumsum(deaths)
   ) %>% 
   ungroup()
 
+tbl_ecdc_threshold <- tbl_ecdc %>% 
+  group_by(country) %>% 
+  filter(cumulative_reported >= 100) %>% 
+  arrange(date_rep, .by_group = TRUE) %>% 
+  mutate(
+    days_since = difftime(date_rep, head(date_rep, 1), units = "days") %>% as.numeric()
+  ) %>% 
+  ungroup()
+
 save(
   file = file.path('data', 'ecdc.rda')
   , tbl_ecdc
+  , tbl_ecdc_threshold
 )
