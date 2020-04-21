@@ -19,7 +19,16 @@ read_one_day <- function(date_in) {
     , date_in_us
     , '.csv')
   
-  tbl_out <- read_csv(url)
+  cat(paste("Reading ", date_in))
+  
+  retval <- try(
+    {tbl_out <- read_csv(url)  }
+  )
+  
+  if (inherits(retval, 'try-error')) {
+    cat(paste("Unable to retrieve ", date_in))
+    return(NULL)
+  }  
   
   names(tbl_out) <- gsub(" ", "_", names(tbl_out))
   names(tbl_out) <- gsub("/", "_", names(tbl_out))
