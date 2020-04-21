@@ -39,7 +39,7 @@ convert_fips <- function(tbl_in) {
   
 }
 
-dates <- seq.Date(as.Date('2020-01-22'), as.Date('2020-03-23'), by = 'day')
+dates <- seq.Date(as.Date('2020-01-22'), as.Date(Sys.Date()), by = 'day')
 
 lst_all <- map(dates, read_one_day)
 
