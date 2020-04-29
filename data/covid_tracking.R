@@ -13,6 +13,9 @@ tbl_historical <- read_csv('https://covidtracking.com/api/v1/states/daily.csv') 
   janitor::clean_names()
 
 tbl_historical <- tbl_historical %>% 
+  mutate(
+    date = lubridate::ymd(date)
+  ) %>% 
   group_by(state) %>% 
   arrange(date, .by_group = TRUE) %>% 
   tidyr::fill(death, hospitalized, total, total_test_results) %>% 
