@@ -22,7 +22,7 @@ GET(
 
 tbl_ecdc <- read_excel(tf) %>% 
   rename(
-    population = popData2018
+    population = popData2019
     , country = `countriesAndTerritories`
     , date_rep = dateRep
     , country_code = countryterritoryCode
