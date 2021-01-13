@@ -2,7 +2,7 @@ data/%.rda:data/%.R
 	Rscript -e "source('$<')"
 
 %.html:%.ipynb
-	jupyter nbconvert --execute $<
+	jupyter nbconvert --to HTML --execute $<
 
 DATA_FILES = $(wildcard data/*.R)
 DATA_RDA = $(DATA_FILES:R=rda)
